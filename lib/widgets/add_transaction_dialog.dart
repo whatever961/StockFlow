@@ -55,7 +55,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
     'WITHDRAWAL': '出金',
   };
 
-  final _numberFormat = NumberFormat("#,##0");
+  final _numberFormat = NumberFormat("#,##0.##");
 
   Future<void> _pickDate() async {
     final DateTime? picked = await showDatePicker(
@@ -238,7 +238,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
       final currentCash = snapshot?.totalCashBalance ?? Decimal.zero;
 
       if (totalAmount > currentCash) {
-        final errorMsg = '現金不足！餘額: \$${NumberFormat("#,##0").format(currentCash.toDouble())}，需: \$${NumberFormat("#,##0").format(totalAmount.toDouble())}';
+        final errorMsg = '現金不足！餘額: \$${NumberFormat("#,##0.##").format(currentCash.toDouble())}，需: \$${NumberFormat("#,##0.##").format(totalAmount.toDouble())}';
 
         if (_tradeType == 'SPOT') {
           setState(() => _stockError = errorMsg);
