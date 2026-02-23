@@ -178,7 +178,7 @@ class _DashboardViewState extends State<_DashboardView> {
     final fontSize = settings.fontSize;
     final assetProvider = context.watch<AssetProvider>();
     final snapshot = assetProvider.snapshot;
-    final numberFormat = NumberFormat("#,##0");
+    final numberFormat = NumberFormat("#,##0.##");
 
     // 若資料還在讀取或是空的，顯示預設畫面
     if (assetProvider.isLoading || snapshot == null) {
@@ -437,7 +437,7 @@ class _DashboardViewState extends State<_DashboardView> {
   // --- UI 元件：單列資產比例 ---
   Widget _buildAssetRow(String name, double value, double total, Color color, double fontSize) {
     final percent = (value / total * 100).toStringAsFixed(2);
-    final valueStr = NumberFormat("#,##0").format(value);
+    final valueStr = NumberFormat("#,##0.##").format(value);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
@@ -470,7 +470,7 @@ class _DashboardViewState extends State<_DashboardView> {
         : (profit < 0 ? settings.sellColor : Colors.grey); // 賠錢用賣出色
 
     return Text(
-      '未實現: $prefix${NumberFormat("#,##0").format(profit)}',
+      '未實現: $prefix${NumberFormat("#,##0.##").format(profit)}',
       style: TextStyle(
         fontSize: fontSize,
         color: color,
