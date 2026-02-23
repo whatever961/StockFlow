@@ -470,7 +470,7 @@ class _DashboardViewState extends State<_DashboardView> {
         : (profit < 0 ? settings.sellColor : Colors.grey); // 賠錢用賣出色
 
     return Text(
-      '未實現: $prefix${NumberFormat("#,##0.##").format(profit)}',
+      '預估未實現損益(手續費未折讓下): $prefix${NumberFormat("#,##0.##").format(profit)}',
       style: TextStyle(
         fontSize: fontSize,
         color: color,
@@ -652,4 +652,5 @@ class _DashboardViewState extends State<_DashboardView> {
   }
     return '${text.substring(0, limit)}...';
   }
+
 }
