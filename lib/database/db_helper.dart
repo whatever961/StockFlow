@@ -164,13 +164,11 @@ class DatabaseHelper {
       SELECT * FROM transactions 
       WHERE substr(date, 1, 10) IN (
           SELECT substr(date, 1, 10) 
-          FROM transactions 
-          WHERE trade_type NOT LIKE 'OPENING_%'  -- [新增] 內層過濾
+          FROM transactions
           GROUP BY substr(date, 1, 10) 
           ORDER BY substr(date, 1, 10) DESC 
           LIMIT 3
       ) 
-      AND trade_type NOT LIKE 'OPENING_%'        -- [新增] 外層過濾
       ORDER BY date DESC
     ''');
   }
@@ -213,10 +211,8 @@ class DatabaseHelper {
   }
 
   _SqlBuilder _buildWhereClause(String? keyword, List<String>? filters) {
-    // 1. 預設條件：未刪除 且 不是初始資金/持股
-    List<String> conditions = [
-      "trade_type NOT LIKE 'OPENING_%'" // [新增] 核心過濾條件
-    ];
+    // 1. 預設條件：
+    List<String> conditions = [];
     List<dynamic> args = [];
 
     // 1. 關鍵字搜尋 (日期、代號、名稱、備註)
@@ -241,6 +237,12 @@ class DatabaseHelper {
       List<String> typeConditions = [];
       for (var f in filters) {
         switch (f) {
+          case 'OPENING_STOCK':
+            typeConditions.add("(trade_type = 'OPENING_STOCK')");
+            break;
+          case 'OPENING_CASH':
+            typeConditions.add("(trade_type = 'OPENING_CASH')");
+            break;
           case 'SPOT_BUY':
             typeConditions.add("(trade_type = 'SPOT' AND type = 'BUY')");
             break;
