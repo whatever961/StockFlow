@@ -308,7 +308,7 @@ class _DashboardViewState extends State<_DashboardView> {
           const Divider(height: 48, thickness: 2),
 
           // === 下半部：近三日帳務列表 (維持原本邏輯) ===
-          Text('近三日帳務資料', style: TextStyle(fontSize: fontSize + 2, fontWeight: FontWeight.bold)),
+          Text('近期交易紀錄', style: TextStyle(fontSize: fontSize + 2, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           
           // 表頭
@@ -519,7 +519,13 @@ class _DashboardViewState extends State<_DashboardView> {
     String tagText;
     final fontSize = settings.fontSize;
 
-    if (tx.tradeType == 'CASH_DIVIDEND') {
+    if (tx.tradeType == 'OPENING_STOCK') {
+      mainColor = Colors.deepPurple; 
+      tagText = '期初庫存';
+    } else if (tx.tradeType == 'OPENING_CASH') {
+      mainColor = Colors.blueGrey; 
+      tagText = '初始資金';
+    } else if (tx.tradeType == 'CASH_DIVIDEND') {
         // 1. 現金股利：藍色
         mainColor = Colors.blue; 
         tagText = '現金股利';
@@ -551,6 +557,21 @@ class _DashboardViewState extends State<_DashboardView> {
     final totalStr = fmt.format(double.tryParse(tx.totalAmount.toString()) ?? 0);
     final dateStr = DateFormat('yyyy/MM/dd').format(tx.date);
 
+    // 日期顯示邏輯：如果是期初資產，多加一行「建檔日」灰字
+    Widget dateWidget;
+    if (tx.tradeType == 'OPENING_STOCK' || tx.tradeType == 'OPENING_CASH') {
+      dateWidget = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('建檔日', style: TextStyle(fontSize: fontSize - 4, color: Colors.grey, fontWeight: FontWeight.bold)),
+          Text(dateStr, style: TextStyle(fontSize: fontSize)),
+        ],
+      );
+    } else {
+      dateWidget = Text(dateStr, style: TextStyle(fontSize: fontSize));
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
@@ -558,7 +579,7 @@ class _DashboardViewState extends State<_DashboardView> {
           // 1. 日期
           Expanded(
             flex: 2,
-            child: Text(dateStr, style: TextStyle(fontSize: fontSize)),
+            child: dateWidget,
           ),
           
           // 2. 代號名稱 + 標籤
@@ -652,5 +673,4 @@ class _DashboardViewState extends State<_DashboardView> {
   }
     return '${text.substring(0, limit)}...';
   }
-
 }

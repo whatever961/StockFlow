@@ -36,6 +36,8 @@ class _HistoryPageState extends State<HistoryPage> {
     'WITHDRAWAL': '出金',
     'CASH_DIVIDEND': '現金股利',
     'STOCK_DIVIDEND': '股票股利',
+    'OPENING_STOCK': '期初庫存',
+    'OPENING_CASH': '初始資金',
   };
 
   @override
@@ -361,13 +363,17 @@ class _HistoryPageState extends State<HistoryPage> {
 
   // 單筆資料列
   Widget _buildHistoryRow(StockTransaction tx, SettingsProvider settings) {
-    final fmt = NumberFormat("#,##0");
+    final fmt = NumberFormat("#,##0.##");
     
     // 顏色與標籤邏輯 (完全沿用)
     Color mainColor;
     String tagText;
 
-    if (tx.tradeType == 'CASH_DIVIDEND') {
+    if (tx.tradeType == 'OPENING_STOCK') {
+      mainColor = Colors.deepPurple; tagText = '期初庫存';
+    } else if (tx.tradeType == 'OPENING_CASH') {
+      mainColor = Colors.blueGrey; tagText = '初始資金';
+    } else if (tx.tradeType == 'CASH_DIVIDEND') {
       mainColor = Colors.blue; tagText = '現金股利';
     } else if (tx.tradeType == 'STOCK_DIVIDEND') {
       mainColor = Colors.orange; tagText = '股票股利';
@@ -389,11 +395,26 @@ class _HistoryPageState extends State<HistoryPage> {
     final totalStr = fmt.format(double.tryParse(tx.totalAmount.toString()) ?? 0);
     final dateStr = DateFormat('yyyy/MM/dd').format(tx.date);
 
+    // 日期顯示邏輯：如果是期初資產，多加一行「建檔日」
+    Widget dateWidget;
+    if (tx.tradeType == 'OPENING_STOCK' || tx.tradeType == 'OPENING_CASH') {
+      dateWidget = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('建檔日', style: TextStyle(fontSize: settings.fontSize - 4, color: Colors.grey, fontWeight: FontWeight.bold)),
+          Text(dateStr, style: TextStyle(fontSize: settings.fontSize)),
+        ],
+      );
+    } else {
+      dateWidget = Text(dateStr, style: TextStyle(fontSize: settings.fontSize));
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
         children: [
-          Expanded(flex: 2, child: Text(dateStr, style: TextStyle(fontSize: settings.fontSize))),
+          Expanded(flex: 2, child: dateWidget),
           Expanded(
             flex: 3,
             child: Column(
