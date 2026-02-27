@@ -92,8 +92,11 @@ class StockPriceService {
         print('MIS API 請求失敗: ${response.statusCode}');
         return {};
       }
+    } on FormatException catch (e) {
+      print('證交所資料格式錯誤: $e');
+      return {};
     } catch (e) {
-      print('MIS 連線錯誤: $e');
+      print('取得股價失敗: $e');
       return {};
     }
   }
